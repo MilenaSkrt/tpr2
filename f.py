@@ -15,6 +15,13 @@ def gradient(x):
 # Метод для нахождения оптимального шага
 def optimal_step(x):
     grad = gradient(x)
+    grad_norm = np.linalg.norm(grad)
+    
+    # Проверка на нулевой градиент
+    if grad_norm == 0:
+        return 0  # Если градиент равен нулю, шаг не нужен
+
+    # Используем метод наискорейшего спуска для нахождения оптимального шага
     return -np.dot(grad, grad) / np.dot(grad, gradient(x + 0.001 * grad))
 
 # Градиентный метод с оптимальным шагом
