@@ -12,28 +12,25 @@ def gradient(x):
     df_dx2 = -3*x1 + 20*x2 - 3  # Частная производная по x2
     return np.array([df_dx1, df_dx2])
 
-# Метод для нахождения оптимального шага
-def optimal_step(x):
-    grad = gradient(x)
-    grad_norm = np.linalg.norm(grad)
-    
-    # Проверка на нулевой градиент
-    if grad_norm == 0:
-        return 0  # Если градиент равен нулю, шаг не нужен
-
-    # Используем метод наискорейшего спуска для нахождения оптимального шага
-    return -np.dot(grad, grad) / np.dot(grad, gradient(x + 0.001 * grad))
-
-# Градиентный метод с оптимальным шагом
-def gradient_descent(f, x0, tol=1e-6, max_iter=1000):
+# Градиентный метод с постоянным шагом и дроблением шага
+def gradient_descent(f, x0, initial_step=0.1, tol=1e-6, max_iter=1000):
     x = x0
+    step_size = initial_step
+    
     for iteration in range(max_iter):
         grad = gradient(x)
-        step_size = optimal_step(x)  # Находим оптимальный шаг
         x_new = x - step_size * grad  # Обновляем значение
-        if np.linalg.norm(x_new - x) < tol:  # Проверка на сходимость
+        
+        # Проверка на сходимость
+        if np.linalg.norm(x_new - x) < tol:
             break
-        x = x_new
+        
+        # Проверка, улучшилось ли значение функции
+        if f(*x_new) < f(*x):
+            x = x_new  # Если улучшилось, обновляем x
+        else:
+            step_size *= 0.5  # Если не улучшилось, уменьшаем шаг
+
     return x, f(*x), iteration + 1  # Возвращаем координаты минимума, значение функции и количество итераций
 
 # Начальная точка
